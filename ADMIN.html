@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HAPAG-ASA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+            padding: 1.2rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .admin-badge {
+            background: #22d3ee;
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Main Layout */
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .sidebar h3 {
+            color: #1e40af;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu button {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: none;
+            background: #f5f7fa;
+            color: #1e40af;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-menu button:hover {
+            background: #e0e7ff;
+        }
+
+        .sidebar-menu button.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section-header h2 {
+            color: #1e40af;
+            font-size: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            padding: 1.5rem;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar select,
+        .filter-bar input {
+            padding: 0.6rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .filter-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table thead {
+            background: #f5f7fa;
+        }
+
+        .data-table th {
+            padding: 1rem;
+            text-align: left;
+            color: #1e40af;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-completed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-approve {
+            background: #22d3ee;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #06b6d4;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .btn-view {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #4f46e5;
+        }
+
+        .btn-export {
+            background: #10b981;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+        }
+
+        .btn-export:hover {
+            background: #059669;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .modal-header h3 {
+            color: #1e40af;
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .detail-row {
+            margin-bottom: 1rem;
+        }
+
+        .detail-row label {
+            font-weight: 600;
+            color: #1e40af;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-row p {
+            color: #4b5563;
+            padding: 0.5rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 1024px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .sidebar-menu {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 0.5rem;
+            }
+        }
+
+        /* iPad (768px - 1024px) */
+        @media (max-width: 1024px) {
+           .admin-container {
+                 grid-template-columns: 1fr;
+                 padding: 1.5rem;
+         }
+
+         .sidebar {
+              position: static;
+              padding: 1.2rem;
+         }
+
+        .sidebar h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .sidebar-menu button {
+            padding: 0.7rem 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .main-content {
+            padding: 1.5rem;
+        }
+
+    .section-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.2rem;
+    }
+
+    .stat-card {
+        padding: 1.2rem;
+    }
+
+    .stat-card .stat-number {
+        font-size: 2.2rem;
+    }
+
+    .filter-bar {
+        gap: 0.8rem;
+    }
+
+    .filter-bar select,
+    .filter-bar input {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .data-table {
+        font-size: 0.9rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.8rem 0.6rem;
+    }
+
+    .action-buttons {
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-export {
+        padding: 0.5rem 1.2rem;
+        font-size: 0.95rem;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+}
+
+/* Mobile (up to 768px) */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem 1.5rem;
+    }
+
+    .logo {
+        font-size: 1.4rem;
+        gap: 10px;
+    }
+
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+
+    .admin-badge {
+        padding: 0.25rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .admin-container {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .sidebar {
+        padding: 1rem;
+        border-radius: 15px;
+    }
+
+    .sidebar h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .sidebar-menu {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+
+    .sidebar-menu button {
+        padding: 0.6rem 0.7rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    .main-content {
+        padding: 1.2rem;
+        border-radius: 15px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .stat-card h3 {
+        font-size: 0.8rem;
+    }
+
+    .stat-card .stat-number {
+        font-size: 2rem;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.8rem;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .filter-bar select,
+    .filter-bar input {
+        width: 100%;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    .data-table {
+        font-size: 0.75rem;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.6rem 0.4rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .btn {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        width: 100%;
+    }
+
+    .btn-export {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        width: 100%;
+    }
+
+    .status-badge {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .modal-content {
+        padding: 1.2rem;
+        border-radius: 15px;
+        max-height: 70vh;
+    }
+
+    .modal-header h3 {
+        font-size: 1.3rem;
+    }
+
+    .detail-row {
+        margin-bottom: 0.8rem;
+    }
+
+    .detail-row label {
+        font-size: 0.85rem;
+    }
+
+    .detail-row p {
+        font-size: 0.85rem;
+        padding: 0.4rem;
+    }
+}
+
+/* Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+    header {
+        padding: 0.8rem 1rem;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+        gap: 8px;
+    }
+
+    .logo-icon {
+        font-size: 1.3rem;
+    }
+
+    .admin-badge {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.65rem;
+    }
+
+    .admin-container {
+        padding: 0.8rem;
+        gap: 0.8rem;
+    }
+
+    .sidebar {
+        padding: 0.8rem;
+        border-radius: 12px;
+    }
+
+    .sidebar h3 {
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .sidebar-menu {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+    }
+
+    .sidebar-menu button {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+        gap: 0.3rem;
+    }
+
+    .main-content {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .section-header {
+        margin-bottom: 1.2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .stats-grid {
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .stat-card {
+        padding: 0.8rem;
+        border-radius: 10px;
+    }
+
+    .stat-card h3 {
+        font-size: 0.7rem;
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.8rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.7rem;
+    }
+
+    .filter-bar {
+        gap: 0.5rem;
+    }
+
+    .filter-bar select,
+    .filter-bar input {
+        padding: 0.45rem 0.7rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+
+    .data-table {
+        font-size: 0.7rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.5rem 0.3rem;
+    }
+
+    .btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.7rem;
+        border-radius: 5px;
+    }
+
+    .btn-export {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.8rem;
+        border-radius: 8px;
+    }
+
+    .status-badge {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
+        border-radius: 15px;
+    }
+
+    .modal-content {
+        padding: 1rem;
+        border-radius: 12px;
+        max-height: 75vh;
+    }
+
+    .modal-header {
+        margin-bottom: 1rem;
+        padding-bottom: 0.8rem;
+    }
+
+    .modal-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .close-modal {
+        font-size: 1.2rem;
+    }
+
+    .detail-row {
+        margin-bottom: 0.7rem;
+    }
+
+    .detail-row label {
+        font-size: 0.8rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .detail-row p {
+        font-size: 0.8rem;
+        padding: 0.35rem;
+        border-radius: 6px;
+    }
+
+    /* Make tables more mobile-friendly */
+    .data-table thead {
+        display: none;
+    }
+
+    .data-table,
+    .data-table tbody,
+    .data-table tr,
+    .data-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .data-table tr {
+        margin-bottom: 1rem;
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 0.8rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .data-table td {
+        text-align: left;
+        padding: 0.4rem 0;
+        border: none;
+        position: relative;
+        padding-left: 45%;
+    }
+
+    .data-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 40%;
+        padding-right: 10px;
+        font-weight: 600;
+        color: #1e40af;
+        font-size: 0.75rem;
+    }
+
+    .action-buttons {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #e5e7eb;
+    }
+}
+        
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <div class="admin-badge">👤 ADMIN DASHBOARD</div>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h3>📊 Menu</h3>
+            <ul class="sidebar-menu">
+                <li><button class="active" onclick="showSection('dashboard')">📈 Dashboard</button></li>
+                <li><button onclick="showSection('applications')">📝 Applications</button></li>
+                <li><button onclick="showSection('donations')">💝 Donations</button></li>
+                <li><button onclick="showSection('programs')">🏘️ Programs</button></li>
+                <li><button onclick="showSection('reports')">📊 Reports</button></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2>Dashboard Overview</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>TOTAL APPLICATIONS</h3>
+                        <div class="stat-number">47</div>
+                        <div class="stat-label">12 pending review</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>TOTAL DONATIONS</h3>
+                        <div class="stat-number">₱89,500</div>
+                        <div class="stat-label">23 donors this month</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>ACTIVE PROGRAMS</h3>
+                        <div class="stat-number">2</div>
+                        <div class="stat-label">Barreto & Gordon Heights</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>BENEFICIARIES</h3>
+                        <div class="stat-number">220</div>
+                        <div class="stat-label">Children & Pregnant Women</div>
+                    </div>
+                </div>
+
+                <h3 style="color: #1e40af; margin: 2rem 0 1rem;">Recent Activities</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Activity</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Oct 10, 2025</td>
+                            <td>Maria Santos - Application</td>
+                            <td>Barreto Feeding</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>Oct 10, 2025</td>
+                            <td>Juan Dela Cruz - Donation</td>
+                            <td>₱5,000</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>Oct 09, 2025</td>
+                            <td>Ana Reyes - Application</td>
+                            <td>Gordon Heights</td>
+                            <td><span class="status-badge status-approved">Approved</span></td>
+                        </tr>
+                        <tr>
+                            <td>Oct 09, 2025</td>
+                            <td>Pedro Garcia - Donation</td>
+                            <td>₱2,500</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Applications Section -->
+            <section id="applications" class="content-section">
+                <div class="section-header">
+                    <h2>Beneficiary Applications</h2>
+                    <button class="btn btn-export" onclick="exportData('applications')">📥 Export Data</button>
+                </div>
+
+                <div class="filter-bar">
+                    <select id="programFilter" onchange="filterApplications()">
+                        <option value="all">All Programs</option>
+                        <option value="barreto">Brgy. Barreto Feeding</option>
+                        <option value="gordon">Gordon Heights Nutrition</option>
+                    </select>
+                    <select id="statusFilter" onchange="filterApplications()">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <input type="text" placeholder="🔍 Search by name..." id="searchApplications" oninput="filterApplications()">
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Program</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsTable">
+                        <tr data-program="barreto" data-status="pending">
+                            <td>#APP001</td>
+                            <td>Maria Santos</td>
+                            <td>Brgy. Barreto Feeding</td>
+                            <td>Oct 10, 2025</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" onclick="viewApplication(1)">View</button>
+                                    <button class="btn btn-approve" onclick="approveApplication(1)">Approve</button>
+                                    <button class="btn btn-reject" onclick="rejectApplication(1)">Reject</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-program="gordon" data-status="pending">
+                            <td>#APP002</td>
+                            <td>Rosa Mendoza</td>
+                            <td>Gordon Heights Nutrition</td>
+                            <td>Oct 09, 2025</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" onclick="viewApplication(2)">View</button>
+                                    <button class="btn btn-approve" onclick="approveApplication(2)">Approve</button>
+                                    <button class="btn btn-reject" onclick="rejectApplication(2)">Reject</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-program="barreto" data-status="approved">
+                            <td>#APP003</td>
+                            <td>Ana Reyes</td>
+                            <td>Brgy. Barreto Feeding</td>
+                            <td>Oct 08, 2025</td>
+                            <td><span class="status-badge status-approved">Approved</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" onclick="viewApplication(3)">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Donations Section -->
+            <section id="donations" class="content-section">
+                <div class="section-header">
+                    <h2>Donation Records</h2>
+                    <button class="btn btn-export" onclick="exportData('donations')">📥 Export Data</button>
+                </div>
+
+                <div class="filter-bar">
+                    <select id="donationProgramFilter" onchange="filterDonations()">
+                        <option value="all">All Programs</option>
+                        <option value="barreto">Brgy. Barreto Feeding</option>
+                        <option value="gordon">Gordon Heights Nutrition</option>
+                    </select>
+                    <select id="amountFilter" onchange="filterDonations()">
+                        <option value="all">All Amounts</option>
+                        <option value="500-1000">₱500 - ₱1,000</option>
+                        <option value="1000-5000">₱1,000 - ₱5,000</option>
+                        <option value="5000+">₱5,000+</option>
+                    </select>
+                    <input type="text" placeholder="🔍 Search donor..." id="searchDonations" oninput="filterDonations()">
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Donor Name</th>
+                            <th>Amount</th>
+                            <th>Program</th>
+                            <th>Payment Method</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="donationsTable">
+                        <tr data-program="barreto" data-amount="5000">
+                            <td>#DON001</td>
+                            <td>Pedro Penduko</td>
+                            <td>₱5,000</td>
+                            <td>Brgy. Barreto Feeding</td>
+                            <td>GCash</td>
+                            <td>Oct 10, 2025</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" onclick="viewDonation(1)">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-program="gordon" data-amount="2500">
+                            <td>#DON002</td>
+                            <td>Pedro Garcia</td>
+                            <td>₱2,500</td>
+                            <td>Gordon Heights Nutrition</td>
+                            <td>PayMaya</td>
+                            <td>Oct 09, 2025</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" onclick="viewDonation(2)">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-program="barreto" data-amount="10000">
+                            <td>#DON003</td>
+                            <td>Linda Martinez</td>
+                            <td>₱10,000</td>
+                            <td>Brgy. Barreto Feeding</td>
+                            <td>Bank Transfer</td>
+                            <td>Oct 08, 2025</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-view" onclick="viewDonation(3)">View</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Programs Section -->
+            <section id="programs" class="content-section">
+                <div class="section-header">
+                    <h2>Program Management</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>BARRETO FEEDING</h3>
+                        <div class="stat-number">₱12,000</div>
+                        <div class="stat-label">Target Amount</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>FUNDS RAISED</h3>
+                        <div class="stat-number">₱17,500</div>
+                        <div class="stat-label">146% of target</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>APPROVED APPLICANTS</h3>
+                        <div class="stat-number">140</div>
+                        <div class="stat-label">Children registered</div>
+                    </div>
+                </div>
+
+                <h3 style="color: #1e40af; margin: 2rem 0 1rem;">Program Details</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Program Name</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Target</th>
+                            <th>Registered</th>
+                            <th>Funds</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Brgy. Barreto Feeding</td>
+                            <td>Barreto Basketball Court</td>
+                            <td>Aug 31, 2025</td>
+                            <td>140 Children</td>
+                            <td>98</td>
+                            <td>₱17,500 / ₱12,000</td>
+                            <td><span class="status-badge status-approved">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td>Gordon Heights Nutrition</td>
+                            <td>Gordon Heights Brgy Hall</td>
+                            <td>Sept 15, 2025</td>
+                            <td>80 Pregnants</td>
+                            <td>52</td>
+                            <td>₱4,500 / ₱7,000</td>
+                            <td><span class="status-badge status-approved">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h2>Reports & Analytics</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>MONTHLY DONATIONS</h3>
+                        <div class="stat-number">₱89,500</div>
+                        <div class="stat-label">October 2025</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>TOTAL BENEFICIARIES</h3>
+                        <div class="stat-number">220</div>
+                        <div class="stat-label">All programs combined</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>APPROVAL RATE</h3>
+                        <div class="stat-number">87%</div>
+                        <div class="stat-label">41 of 47 applications</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>AVG DONATION</h3>
+                        <div class="stat-number">₱3,891</div>
+                        <div class="stat-label">Per donor</div>
+                    </div>
+                </div>
+
+                <h3 style="color: #1e40af; margin: 2rem 0 1rem;">Export Reports</h3>
+                <div style="display: grid; gap: 1rem; max-width: 500px;">
+                    <button class="btn btn-export" onclick="exportReport('monthly')">📊 Monthly Summary Report</button>
+                    <button class="btn btn-export" onclick="exportReport('beneficiaries')">👥 Beneficiaries List</button>
+                    <button class="btn btn-export" onclick="exportReport('financial')">💰 Financial Report</button>
+                    <button class="btn btn-export" onclick="exportReport('complete')">📁 Complete Report (All Data)</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Viewing Details -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Application Details</h3>
+                <button class="close-modal" onclick="closeModal()">✕</button>
+            </div>
+            <div id="modalBody">
+                <!-- Content will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+
+            const buttons = document.querySelectorAll('.sidebar-menu button');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Filter Applications
+        function filterApplications() {
+            const programFilter = document.getElementById('programFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchText = document.getElementById('searchApplications').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#applicationsTable tr');
+            rows.forEach(row => {
+                const program = row.dataset.program;
+                const status = row.dataset.status;
+                const name = row.cells[1]?.textContent.toLowerCase() || '';
+                
+                const programMatch = programFilter === 'all' || program === programFilter;
+                const statusMatch = statusFilter === 'all' || status === statusFilter;
+                const nameMatch = searchText === '' || name.includes(searchText);
+                
+                row.style.display = (programMatch && statusMatch && nameMatch) ? '' : 'none';
+            });
+        }
+
+        // Filter Donations
+        function filterDonations() {
+            const programFilter = document.getElementById('donationProgramFilter').value;
+            const amountFilter = document.getElementById('amountFilter').value;
+            const searchText = document.getElementById('searchDonations').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#donationsTable tr');
+            rows.forEach(row => {
+                const program = row.dataset.program;
+                const amount = parseInt(row.dataset.amount);
+                const donor = row.cells[1]?.textContent.toLowerCase() || '';
+                
+                const programMatch = programFilter === 'all' || program === programFilter;
+                
+                let amountMatch = true;
+                if (amountFilter === '500-1000') amountMatch = amount >= 500 && amount < 1000;
+                else if (amountFilter === '1000-5000') amountMatch = amount >= 1000 && amount < 5000;
+                else if (amountFilter === '5000+') amountMatch = amount >= 5000;
+                
+                const donorMatch = searchText === '' || donor.includes(searchText);
+                
+                row.style.display = (programMatch && amountMatch && donorMatch) ? '' : 'none';
+            });
+        }
+
+        // View Application Details
+        function viewApplication(id) {
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalTitle.textContent = 'Application Details - #APP 
+        }

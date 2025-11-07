@@ -1,0 +1,384 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+    padding: 1.2rem 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: opacity 0.3s;
+}
+
+.nav-links a:hover {
+    opacity: 0.8;
+}
+
+.nav-links a.prog {
+    color: #60a5fa;
+}
+
+/* Main Content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+/* Page Title */
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    justify-content: center;
+}
+
+.title-icon {
+    font-size: 3rem;
+}
+
+.page-title h1 {
+    color: #1e40af;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Program Cards */
+.programs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.program-card {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.program-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.program-card h2 {
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+.program-details {
+    color: white;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.program-details div {
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+}
+
+.program-details strong {
+    font-weight: 600;
+}
+
+.program-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-support {
+    font-size: medium;
+    font-weight: 600;
+    background: #22d3ee;
+    color: white;
+    border: 5px solid #22d3ee;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-support:hover {
+    background: #06b6d4;
+    transform: scale(1.05);
+}
+
+.btn-apply {
+    background: #67e8f9;
+    color: #1e40af;
+}
+
+.btn-apply:hover {
+    background: #a5f3fc;
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 0.8rem 2.5rem;
+    background: #6ee7b7;
+    color: #1e40af;
+    border: none;
+    border-radius: 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-right: 1rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background: #34d399;
+    transform: translateY(-2px) scale(1.03);
+}
+
+/* iPad (768px - 1024px) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 2.5rem 2rem;
+    }
+
+    .page-title h1 {
+        font-size: 2.2rem;
+    }
+
+    .title-icon {
+        font-size: 2.5rem;
+    }
+
+    .program-card {
+        padding: 2rem;
+    }
+
+    .program-card h2 {
+        font-size: 1.6rem;
+    }
+
+    .program-details div {
+        font-size: 1rem;
+    }
+
+    .btn-support {
+        padding: 0.7rem 1.8rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile (up to 768px) */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem 1.5rem;
+    }
+
+    .logo {
+        font-size: 1.4rem;
+        gap: 10px;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .nav-links a {
+        font-size: 0.95rem;
+    }
+
+    .container {
+        padding: 2rem 1.5rem;
+    }
+
+    .page-title {
+        margin-bottom: 2rem;
+    }
+
+    .page-title h1 {
+        font-size: 1.8rem;
+    }
+
+    .title-icon {
+        font-size: 2rem;
+    }
+
+    .program-card {
+        padding: 1.5rem;
+    }
+
+    .program-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .program-details {
+        margin-bottom: 1rem;
+    }
+
+    .program-details div {
+        font-size: 0.95rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .program-actions {
+        gap: 0.8rem;
+    }
+
+    .btn-support {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+/* Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+    header {
+        padding: 0.8rem 1rem;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+        gap: 8px;
+    }
+
+    .logo-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+    }
+
+    .nav-links {
+        gap: 0.5rem;
+    }
+
+    .nav-links a {
+        font-size: 0.85rem;
+    }
+
+    .container {
+        padding: 1.5rem 1rem;
+    }
+
+    .page-title {
+        flex-direction: column;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .title-icon {
+        font-size: 2.5rem;
+    }
+
+    .programs-list {
+        gap: 1.5rem;
+    }
+
+    .program-card {
+        padding: 1.2rem;
+        border-radius: 15px;
+    }
+
+    .program-card h2 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .program-details div {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .program-actions {
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .btn-support {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        border-width: 3px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        margin-right: 0;
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+    }
+}

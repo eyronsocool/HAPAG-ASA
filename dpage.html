@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate - HAPAG-ASA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+            padding: 1.2rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Page Title */
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .title-icon {
+            font-size: 3rem;
+        }
+
+        .page-title h1 {
+            color: #1e40af;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        /* Program Info Card */
+        .program-info {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .program-info h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .program-info p {
+            color: white;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        /* Donation Form Card */
+        .donation-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .donation-card h3 {
+            color: #1e40af;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .amount-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .amount-btn {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e40af;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .amount-btn:hover {
+            border-color: #6366f1;
+            background: #f0f9ff;
+        }
+
+        .amount-btn.selected {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-method {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .payment-method:hover {
+            border-color: #6366f1;
+            background: #f0f9ff;
+        }
+
+        .payment-method.selected {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .btn-donate {
+            width: 100%;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+            color: white;
+            margin-top: 1rem;
+        }
+
+        .btn-donate:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(34, 211, 238, 0.4);
+        }
+
+        .impact-note {
+            background: #f0f9ff;
+            border-left: 4px solid #6366f1;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            color: #1e40af;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* iPad (768px - 1024px) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 2.5rem 2rem;
+    }
+
+    .page-title h1 {
+        font-size: 2.2rem;
+    }
+
+    .title-icon {
+        font-size: 2.5rem;
+    }
+
+    .program-info {
+        padding: 1.8rem;
+    }
+
+    .program-info h2 {
+        font-size: 1.4rem;
+    }
+
+    .program-info p {
+        font-size: 1rem;
+    }
+
+    .donation-card {
+        padding: 2rem;
+    }
+
+    .donation-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .amount-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .payment-methods {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile (up to 768px) */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem 1.5rem;
+    }
+
+    .logo {
+        font-size: 1.4rem;
+        gap: 10px;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .nav-links a {
+        font-size: 0.95rem;
+    }
+
+    .container {
+        padding: 2rem 1.5rem;
+    }
+
+    .page-title {
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title h1 {
+        font-size: 1.8rem;
+    }
+
+    .title-icon {
+        font-size: 2rem;
+    }
+
+    .program-info {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .program-info h2 {
+        font-size: 1.3rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .program-info p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .donation-card {
+        padding: 1.5rem;
+    }
+
+    .donation-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+    .amount-options {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .amount-btn {
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+
+    .payment-methods {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .payment-method {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-donate {
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .impact-note {
+        padding: 0.8rem;
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+    header {
+        padding: 0.8rem 1rem;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+        gap: 8px;
+    }
+
+    .logo-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+    }
+
+    .nav-links {
+        gap: 0.5rem;
+    }
+
+    .nav-links a {
+        font-size: 0.85rem;
+    }
+
+    .container {
+        padding: 1.5rem 1rem;
+    }
+
+    .page-title {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .page-title h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .title-icon {
+        font-size: 2.5rem;
+    }
+
+    .program-info {
+        padding: 1.2rem;
+        border-radius: 15px;
+        margin-bottom: 1.2rem;
+    }
+
+    .program-info h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .program-info p {
+        font-size: 0.85rem;
+    }
+
+    .donation-card {
+        padding: 1.2rem;
+        border-radius: 15px;
+    }
+
+    .donation-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.6rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    .amount-options {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .amount-btn {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+
+    .payment-methods {
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }
+
+    .payment-method {
+        padding: 0.7rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    .btn-donate {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+        border-radius: 20px;
+        margin-top: 0.8rem;
+    }
+
+    .impact-note {
+        padding: 0.7rem;
+        margin-top: 1.2rem;
+        font-size: 0.8rem;
+        border-radius: 8px;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="hpage.html" class="hom">HOME</a></li>
+                <li><a href="spage.html" class="prog">PROGRAMS</a></li>
+                <li><a href="tpage.html" class="abo">ABOUT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="page-title">
+            <div class="title-icon">💝</div>
+            <h1>Make a Donation</h1>
+        </div>
+
+        <div class="donation-card">
+            <h3>Choose Your Donation Amount</h3>
+            
+            <div class="form-group">
+                <label>Select Amount</label>
+                <div class="amount-options">
+                    <button class="amount-btn" onclick="selectAmount(500)">₱500</button>
+                    <button class="amount-btn" onclick="selectAmount(1000)">₱1,000</button>
+                    <button class="amount-btn" onclick="selectAmount(2500)">₱2,500</button>
+                    <button class="amount-btn" onclick="selectAmount(5000)">₱5,000</button>
+                    <button class="amount-btn" onclick="selectAmount(10000)">₱10,000</button>
+                    <button class="amount-btn" onclick="selectAmount(0)">Custom</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="customAmount">Custom Amount (₱)</label>
+                <input type="number" id="customAmount" placeholder="Enter amount" min="1">
+            </div>
+
+            <div class="form-group">
+                <label>Payment Method</label>
+                <div class="payment-methods">
+                    <div class="payment-method" onclick="selectPayment('gcash')">
+                        <div>💳 GCash</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPayment('paymaya')">
+                        <div>💳 PayMaya</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPayment('bank')">
+                        <div>🏦 Bank Transfer</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPayment('credit')">
+                        <div>💳 Credit/Debit Card</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="donorName">Full Name</label>
+                <input type="text" id="donorName" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="donorEmail">Email Address</label>
+                <input type="email" id="donorEmail" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="donorPhone">Phone Number</label>
+                <input type="tel" id="donorPhone" placeholder="Enter your phone number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message (Optional)</label>
+                <textarea id="message" rows="3" placeholder="Leave a message of support..."></textarea>
+            </div>
+
+            <button class="btn-donate" onclick="processDonation()">DONATE NOW</button>
+
+
+        </div>
+    </main>
+
+    <script>
+        let selectedAmount = 0;
+        let selectedPaymentMethod = '';
+
+        function selectAmount(amount) {
+            const buttons = document.querySelectorAll('.amount-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            if (amount === 0) {
+                document.getElementById('customAmount').focus();
+            } else {
+                selectedAmount = amount;
+                document.getElementById('customAmount').value = '';
+            }
+        }
+
+        function selectPayment(method) {
+            const methods = document.querySelectorAll('.payment-method');
+            methods.forEach(m => m.classList.remove('selected'));
+            event.target.closest('.payment-method').classList.add('selected');
+            selectedPaymentMethod = method;
+        }
+
+        document.getElementById('customAmount').addEventListener('input', function(e) {
+            selectedAmount = parseInt(e.target.value) || 0;
+            const buttons = document.querySelectorAll('.amount-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+        });
+
+        function processDonation() {
+            const name = document.getElementById('donorName').value;
+            const email = document.getElementById('donorEmail').value;
+            const phone = document.getElementById('donorPhone').value;
+            const customAmount = document.getElementById('customAmount').value;
+            
+            if (customAmount) {
+                selectedAmount = parseInt(customAmount);
+            }
+            
+            if (!name || !email || !phone) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (selectedAmount <= 0) {
+                alert('Please select or enter a donation amount.');
+                return;
+            }
+            
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method.');
+                return;
+            }
+            
+            alert(`Thank you, ${name}!\n\nDonation Amount: ₱${selectedAmount.toLocaleString()}\nPayment Method: ${selectedPaymentMethod.toUpperCase()}\n\nYou will be redirected to complete your ${selectedPaymentMethod} payment.`);
+            
+            // Here you would redirect to actual payment processing
+            // window.location.href = '/payment?amount=' + selectedAmount + '&method=' + selectedPaymentMethod;
+        }
+    </script>
+</body>
+</html>

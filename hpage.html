@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPAG-ASA</title>
+    <link rel="stylesheet" href="hpage.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="hpage.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="hpage.html" class="hom">HOME</a></li>
+                <li><a href="spage.html" class="prog">PROGRAMS</a></li>
+                <li><a href="tpage.html" class="abo">ABOUT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="content-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🏠</div>
+                <div class="stat-number">2</div>
+                <div class="stat-label">Active Programs</div>
+            </div>
+            
+            <div class="barangays-section">
+                <h2 class="section-title">
+                    <span class="pin-icon">📍</span>
+                    Partnered Barangays
+                </h2>
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterBarangays('all')">All Barangays</button>
+                    <button class="filter-btn" onclick="filterBarangays('high')">High Need</button>
+                </div>
+
+                <ul class="barangay-list" id="barangayList">
+                    <li>Barretto</li>
+                    <li>Gordon Heights</li>
+                    <li>Mabayuan</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function filterBarangays(filter) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const barangayList = document.getElementById('barangayList');
+            
+            if (filter === 'all') {
+                barangayList.innerHTML = `
+                    <li>Barretto</li>
+                    <li>Gordon Heights</li>
+                    <li>Mabayuan</li>
+                `;
+            } else if (filter === 'high') {
+                barangayList.innerHTML = `
+                    <li>Gordon Heights</li>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

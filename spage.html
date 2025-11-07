@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPAG-ASA</title>
+    <link rel="stylesheet" href="spage.css">
+
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="hpage.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="hpage.html" class="hom">HOME</a></li>
+                <li><a href="spage.html" class="prog">PROGRAMS</a></li>
+                <li><a href="tpage.html" class="abo">ABOUT</a></li>
+            </ul>
+        </nav>
+    </header>
+
+</head>
+<body>
+    <main class="container">
+        <div class="page-title">
+            <div class="title-icon">🏘️</div>
+            <h1>Help A Barangay Program</h1>
+        </div>
+
+        <div class="programs-list">
+            <div class="program-card">
+                <h2>Brgy. Barreto Feeding Program</h2>
+                <div class="program-details">
+                    <div><strong>Location:</strong> Brgy. Barreto Basketball Court, Barreto, Olongapo City</div>
+                    <div><strong>Target:</strong> 140 Children</div>
+                    <div><strong>Schedule:</strong> Aug 31, 2025 10:00 AM</div>
+                    <div><strong>Need:</strong> ₱12,000</div>
+                </div>
+                <div class="program-actions">
+                    <a href="dpage.html" class="btn-support">Support</a>
+                    <a href="dpage.html" class="btn-support">Apply</a>
+                </div>
+            </div>
+
+            <div class="program-card">
+                <h2>Brgy. Gordon Heights Nutrition Drive</h2>
+                <div class="program-details">
+                    <div><strong>Location:</strong> Gordon Heights Barangay Hall, Olongapo City</div>
+                    <div><strong>Target:</strong> 80 Pregnants</div>
+                    <div><strong>Schedule:</strong> Sept 15, 2025 8:00 AM</div>
+                    <div><strong>Need:</strong> ₱7,000</div>
+                </div>
+                <div class="program-actions">
+                    <a href="dpage.html" class="btn-support">Support</a>
+                    <a href="dpage.html" class="btn-support">Apply</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function supportProgram(programName) {
+            alert('Thank you for your interest in supporting the ' + programName + '!\n\nYou will be redirected to the donation page.');
+            // Here you can add navigation to a donation/support page
+            // window.location.href = '/support?program=' + encodeURIComponent(programName);
+        }
+
+        function applyProgram(programName) {
+            alert('Opening application form for ' + programName + '...');
+            // Here you can add navigation to an application form
+            // window.location.href = '/apply?program=' + encodeURIComponent(programName);
+        }
+    </script>
+</body>
+</html>
