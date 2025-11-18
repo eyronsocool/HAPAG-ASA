@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPAG-ASA</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="home.html" class="hom">HOME</a></li>
+                <li><a href="program.html" class="prog">PROGRAMS</a></li>
+                <li><a href="about.html" class="abo">ABOUT</a></li>
+                <li><a href="profile.html" class="prof">PROFILE</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="content-wrapper">
+            <div class="content-grid">
+                <div class="stat-card">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Active Programs</div>
+                </div>
+
+                <div class="barangays-section">
+                    <h2 class="section-title">
+                        <span class="pin-icon">📍</span>
+                        Partnered Barangays
+                    </h2>
+                    
+
+
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterBarangays('all', event)">All Barangays</button>
+                        <button class="filter-btn" onclick="filterBarangays('high', event)">High Need</button>
+                    </div>
+
+                    <ul class="barangay-list" id="barangayList">
+                        <li>Barretto</li>
+                        <li>Gordon Heights</li>
+                        <li>Mabayuan</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="userNotification" class="user-notification"></div>
+
+            <div class="welcome-section">
+                <div class="welcome-content">
+                    <div class="welcome-header">
+                        <span class="welcome-icon">👋</span>
+                        <h1 class="welcome-title">Welcome to HAPAG-ASA!</h1>
+                        <p class="welcome-subtitle">Together, we feed hope and build stronger communities</p>
+                    </div>
+
+                    <div class="guide-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>📝 Complete Your Profile</h3>
+                                <p>Fill out your profile information so we can verify your eligibility for our programs.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>🍽️ Browse Programs</h3>
+                                <p>Explore our feeding programs in different barangays and find one that fits your needs.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>✅ Apply or Donate</h3>
+                                <p>Apply as a beneficiary if you need support, or donate to help others in your community.</p>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>🎉 Make an Impact</h3>
+                                <p>Once approved, participate in our programs and help us build a hunger-free Olongapo City!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cta-buttons">
+                        <a href="program.html" class="btn-cta">View Programs</a>
+                        <a href="profile.html" class="btn-cta secondary">Complete Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function filterBarangays(filter, evt) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+
+            const barangayList = document.getElementById('barangayList');
+            
+            if (filter === 'all') {
+                barangayList.innerHTML = `
+                    <li>Barretto</li>
+                    <li>Gordon Heights</li>
+                    <li>Mabayuan</li>
+                `;
+            } else if (filter === 'high') {
+                barangayList.innerHTML = `
+                    <li>Gordon Heights</li>
+                `;
+            }
+        }
+
+  // Listen for application status changes
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      db.collection("applications")
+        .where("uid", "==", user.uid)
+        .onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            if (change.type === "modified") {
+              const app = change.doc.data();
+              if (app.status === "approved") {
+                showUserNotification(`✅ Your application for "${app.programName}" has been approved!`);
+              }
+            }
+          });
+        });
+    }
+  });
+
+  function showUserNotification(message) {
+    const notif = document.getElementById("userNotification");
+    notif.textContent = message;
+    notif.style.display = "block";
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      notif.style.display = "none";
+    }, 5000);
+  }
+
+    </script>
+</body>
+</html>

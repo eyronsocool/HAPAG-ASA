@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HAPAG-ASA - Admin Login</title>
+  <link rel="stylesheet" href="admin-login.css" />
+
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 50%, #66bb6a 100%);
+    background-image: url('images/barangays-cover.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.login-container {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.login-brand {
+  background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.brand-logo {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.brand-tagline {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.brand-icon {
+  font-size: 3rem;
+  margin-top: 2rem;
+  opacity: 0.7;
+}
+
+.login-form-container {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-title {
+  font-size: 2rem;
+  color: #1e3a8a;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-subtitle {
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  color: #374151;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #6b7280;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 1rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 1rem;
+  background: white;
+}
+
+/* Tablet and below (up to 1024px) */
+@media (max-width: 1024px) {
+  .login-container {
+    grid-template-columns: 1fr; /* stack brand and form vertically */
+    max-width: 600px;
+  }
+
+  .login-brand {
+    padding: 2rem;
+  }
+
+  .brand-logo {
+    font-size: 4rem;
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .login-form-container {
+    padding: 2rem;
+  }
+}
+
+/* Mobile (up to 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .login-container {
+    margin: 0 auto;
+    border-radius: 15px;
+  }
+
+  .login-brand {
+    padding: 1.5rem;
+  }
+
+  .brand-logo {
+    font-size: 3rem;
+  }
+
+  .brand-title {
+    font-size: 1.8rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.9rem;
+  }
+
+  .login-form-container {
+    padding: 1.5rem;
+  }
+
+  .form-title {
+    font-size: 1.5rem;
+  }
+
+  .btn-primary, .btn-secondary {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+}
+
+/* Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+  .login-container {
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  .brand-logo {
+    font-size: 2.5rem;
+  }
+
+  .brand-title {
+    font-size: 1.5rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.8rem;
+  }
+
+  .login-form-container {
+    padding: 1rem;
+  }
+
+  .form-title {
+    font-size: 1.3rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .form-group input {
+    padding: 0.7rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-primary, .btn-secondary {
+    font-size: 0.9rem;
+    padding: 0.7rem;
+  }
+}
+
+
+  </style>
+
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="brand-logo">🍲</div>
+      <h1 class="brand-title">ADMIN PORTAL</h1>
+      <p class="brand-tagline">Secure access for authorized personnel only</p>
+      <div class="brand-icon">🔐</div>
+    </div>
+
+    <div class="login-form-container">
+      <h2 class="form-title">Admin Login</h2>
+      <p class="form-subtitle">Enter your credentials to access the dashboard</p>
+
+      <div id="errorMessage" class="error-message"></div>
+      <div id="successMessage" class="success-message"></div>
+
+      <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+        <div class="form-group">
+          <label for="adminEmail">Email Address</label>
+          <input type="email" id="adminEmail" placeholder="Enter admin email" required />
+        </div>
+
+        <div class="form-group">
+          <label for="adminPassword">Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="adminPassword" placeholder="Enter password" required />
+            <button type="button" class="password-toggle" onclick="toggleAdminPassword()" aria-label="Toggle password visibility">
+              <span id="adminEyeIcon">👁️</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="adminLoginBtn">Log In</button>
+      </form>
+
+      <div class="divider">OR</div>
+
+      <a href="login.html" class="btn-secondary">Back to User Login</a>
+    </div>
+  </div>
+
+  <script>
+    let adminPasswordVisible = false;
+
+    function toggleAdminPassword() {
+      const input = document.getElementById('adminPassword');
+      const icon = document.getElementById('adminEyeIcon');
+      adminPasswordVisible = !adminPasswordVisible;
+      input.type = adminPasswordVisible ? 'text' : 'password';
+      icon.textContent = adminPasswordVisible ? '🙈' : '👁️';
+    }
+
+    async function handleAdminLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const loginBtn = document.getElementById('adminLoginBtn');
+  const originalText = loginBtn.innerHTML;
+
+  loginBtn.disabled = true;
+  loginBtn.innerHTML = '<span class="loading"></span> Logging in...';
+
+  try {
+    const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+
+    // ✅ Simple check: only allow specific admin email(s)
+    const adminEmails = ["admin@hapagasa.com"]; // add more if needed
+
+    if (adminEmails.includes(email)) {
+      showSuccess("Login successful! Redirecting...");
+      setTimeout(() => {
+        window.location.href = "ADMIN.html";
+      }, 1500);
+    } else {
+      showError("Access denied. You are not an admin.");
+      firebase.auth().signOut();
+    }
+  } catch (error) {
+    showError("Login failed. Please check your credentials.");
+    loginBtn.disabled = false;
+    loginBtn.innerHTML = originalText;
+  }
+}
+
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      successDiv.classList.remove('show');
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+      setTimeout(() => errorDiv.classList.remove('show'), 5000);
+    }
+
+    function showSuccess(message) {
+      const successDiv = document.getElementById('successMessage');
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.classList.remove('show');
+      successDiv.textContent = message;
+      successDiv.classList.add('show');
+    }
+  </script>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAraqQhEWlLxUP_XTOTZlgN7CAQOkuZbp8",
+      authDomain: "hapag-asa.firebaseapp.com",
+      projectId: "hapag-asa",
+      storageBucket: "hapag-asa.appspot.com",
+      messagingSenderId: "533177839171",
+      appId: "1:533177839171:web:4cd74f4949f2449b09eef6"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+
+
+</body>
+</html>

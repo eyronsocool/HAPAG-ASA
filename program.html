@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPAG-ASA - Programs</title>
+    <link rel="stylesheet" href="program.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="home.html">HOME</a></li>
+                <li><a href="program.html" class="prog">PROGRAMS</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+                <li><a href="profile.html" class="active">PROFILE</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="page-title">
+            <h1>HELP A BARANGAY PROGRAM</h1>
+        </div>
+
+
+
+
+        <div class="programs-list">
+            <div class="program-card">
+                <h2>Brgy. Barreto Feeding Program</h2>
+                <div class="program-details">
+                    <div><strong>Location:</strong> Brgy. Barreto Basketball Court, Barreto, Olongapo City</div>
+                    <div><strong>Target:</strong> 140 Children</div>
+                    <div><strong>Schedule:</strong> Aug 31, 2025 10:00 AM</div>
+                    <div><strong>Need:</strong> ₱12,000</div>
+                    <div><strong>Description:</strong> Feeding program for undernourished children in Brgy. Barreto</div>
+                </div>
+                <div class="program-actions">
+                    <a href="donation.html" class="btn-support">Support</a>
+                    <button class="btn-support" onclick="applyForProgram('Brgy. Barreto Feeding Program', 'barreto-feeding')">
+                        Apply
+                    </button>
+                </div>
+            </div>
+
+            <div id="userNotification" class="user-notification"></div>
+
+            <div class="program-card">
+                <h2>Brgy. Gordon Heights Nutrition Drive</h2>
+                <div class="program-details">
+                    <div><strong>Location:</strong> Gordon Heights Barangay Hall, Olongapo City</div>
+                    <div><strong>Target:</strong> 80 Pregnant Women</div>
+                    <div><strong>Schedule:</strong> December 15, 2025 8:00 AM</div>
+                    <div><strong>Need:</strong> ₱7,000</div>
+                    <div><strong>Description:</strong> Nutrition support for pregnant women in Gordon Heights</div>
+                </div>
+                <div class="program-actions">
+                    <a href="donation.html" class="btn-support">Support</a>
+                    <button class="btn-support" onclick="applyForProgram('Brgy. Gordon Heights Nutrition Drive', 'gordon-nutrition')">
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAraqQhEWlLxUP_XTOTZlgN7CAQOkuZbp8",
+            authDomain: "hapag-asa.firebaseapp.com",
+            projectId: "hapag-asa",
+            storageBucket: "hapag-asa.appspot.com",
+            messagingSenderId: "533177839171",
+            appId: "1:533177839171:web:4cd74f4949f2449b09eef6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        async function applyForProgram(programName, programId) {
+            const user = auth.currentUser;
+            
+            if (!user) {
+                alert('Please login first to apply for this program.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // Check if profile is complete
+                const profileDoc = await db.collection("userProfiles").doc(user.uid).get();
+                
+                if (!profileDoc.exists || !profileDoc.data().profileComplete) {
+                    if (confirm('Please complete your profile first before applying. Go to profile page now?')) {
+                        window.location.href = 'profile.html';
+                    }
+                    return;
+                }
+
+                // Check if already applied
+                const existingApplication = await db.collection("applications")
+                    .where("uid", "==", user.uid)
+                    .where("programId", "==", programId)
+                    .get();
+
+                if (!existingApplication.empty) {
+                    alert('You have already applied for this program. Please wait for admin review.');
+                    return;
+                }
+
+                const profileData = profileDoc.data();
+
+                // Create application
+                const applicationData = {
+                    uid: user.uid,
+                    email: user.email,
+                    programName: programName,
+                    programId: programId,
+                    applicantInfo: {
+                        fullName: profileData.fullName,
+                        firstName: profileData.firstName,
+                        lastName: profileData.lastName,
+                        birthdate: profileData.birthdate,
+                        gender: profileData.gender,
+                        phone: profileData.phone,
+                        barangay: profileData.barangay,
+                        address: profileData.address,
+                        householdSize: profileData.householdSize,
+                        monthlyIncome: profileData.monthlyIncome,
+                        specialNeeds: profileData.specialNeeds
+                    },
+                    status: 'pending',
+                    appliedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    reviewedAt: null,
+                    reviewedBy: null
+                };
+
+                await db.collection("applications").add(applicationData);
+                
+                alert('✅ Application submitted successfully!\n\nYour application for "' + programName + '" has been sent to the admin for review. You will be notified once it is processed.');
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                alert('❌ Error submitting application: ' + error.message);
+            }
+
+  // Listen for application status changes
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      db.collection("applications")
+        .where("uid", "==", user.uid)
+        .onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            if (change.type === "modified") {
+              const app = change.doc.data();
+              if (app.status === "approved") {
+                showUserNotification(`✅ Your application for "${app.programName}" has been approved!`);
+              }
+            }
+          });
+        });
+    }
+  });
+
+  
+  function showUserNotification(message) {
+    const notif = document.getElementById("userNotification");
+    notif.textContent = message;
+    notif.style.display = "block";
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      notif.style.display = "none";
+    }, 5000);
+  }
+
+
+
+</script>
+</body>
+</html>
