@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPAG-ASA</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="home_temp.html" class="hom">HOME</a></li>
+                <li><a href="program.html" class="prog">PROGRAMS</a></li>
+                <li><a href="about.html" class="abo">ABOUT</a></li>
+                <li><a href="profile.html" class="prof">PROFILE</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="hero-banner">
+            <div class="hero-card">
+                <h1>Hapag-Asa Community Portal</h1>
+                <p class="hero-sub">Mobilizing volunteers, donors, and barangays to fight hunger in Olongapo City</p>
+            </div>
+        </div>
+
+        <div class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-title">Meals Served</div>
+                <div class="metric-value">4,512</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Volunteer Drives</div>
+                <div class="metric-value">3 Upcoming</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Donors</div>
+                <div class="metric-value">128 Contributors</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="announcements-card">
+                <div class="card-header">
+                    <div class="card-title">Feeding Program Announcements</div>
+                    <a class="view-all" href="#">View All</a>
+                </div>
+
+                <div class="announcement-item">
+                    <div class="announcement-inner">
+                        <h3 class="announce-title">Community Feeding: Holiday Drive</h3>
+                        <div class="announce-meta">December 20, 2025</div>
+                        <p class="announce-desc">Join us for a community feeding drive. Volunteers and donations welcome — drop-off at HAPAG-ASA Community Center, Brgy. Barretto.</p>
+
+                        <div class="announce-footer">
+                            <div class="comments">3 Comments</div>
+                            <div class="comment-box">
+                                <input type="text" placeholder="Add a comment...">
+                                <button class="send">➤</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="updates-card">
+                <div class="card-header">
+                    <div class="card-title">Donation & Distribution Schedule</div>
+                    <a class="view-all" href="#">View All</a>
+                </div>
+
+                <div class="schedule-item">
+                    <h4 class="schedule-title">Food Pack Distribution</h4>
+                    <div class="schedule-meta">December 18-19, 2025</div>
+                    <p class="schedule-desc">9:00 AM - 2:00 PM | Distribution points across partnered barangays</p>
+                    <div class="schedule-footer">
+                        <div class="comments">5 Comments</div>
+                        <div class="comment-box">
+                            <input type="text" placeholder="Add a comment...">
+                            <button class="send">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="content-grid">
+                <!-- Active Programs and Partnered Barangays removed per request -->
+            </div>
+
+            <div id="userNotification" class="user-notification" style="display:none;"></div>
+
+            <!-- Welcome section removed to make the layout clean and full-width -->
+        </div>
+    </main>
+
+    <script>
+        // Safe notification helper: only runs when firebase `auth` and `db` are available
+        function showUserNotification(message) {
+            const notif = document.getElementById('userNotification');
+            if (!notif) return;
+            notif.textContent = message;
+            notif.style.display = 'block';
+            setTimeout(() => { notif.style.display = 'none'; }, 5000);
+        }
+
+        if (typeof auth !== 'undefined' && typeof db !== 'undefined') {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    db.collection('applications')
+                      .where('uid', '==', user.uid)
+                      .onSnapshot(snapshot => {
+                          snapshot.docChanges().forEach(change => {
+                              if (change.type === 'modified') {
+                                  const app = change.doc.data();
+                                  if (app.status === 'approved') {
+                                      showUserNotification(`✅ Your application for "${app.programName}" has been approved!`);
+                                  }
+                              }
+                          });
+                      });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

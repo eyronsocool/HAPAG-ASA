@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPAG-ASA</title>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="home.css">
+    <!-- jsPDF and html2canvas for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Print styles for PDF download */
+        @media print {
+            /* Black and white only */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color: #000 !important;
+                background: #fff !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+
+            /* Hide navigation and download button */
+            header, .download-btn, #userNotification {
+                display: none !important;
+            }
+
+            /* Page setup */
+            @page {
+                size: A4;
+                margin: 2cm 2cm 2.5cm 2cm;
+                
+                /* Header on every page */
+                @top-center {
+                    content: "HAPAG-ASA Community Portal";
+                    font-family: Arial, sans-serif;
+                    font-size: 10pt;
+                    font-weight: bold;
+                    padding-bottom: 0.5cm;
+                    border-bottom: 1px solid #000;
+                }
+                
+                /* Footer with page number */
+                @bottom-right {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-family: Arial, sans-serif;
+                    font-size: 9pt;
+                    padding-top: 0.5cm;
+                    border-top: 1px solid #000;
+                }
+                
+                /* Footer left side with date */
+                @bottom-left {
+                    content: "Generated: " string(current-date);
+                    font-family: Arial, sans-serif;
+                    font-size: 9pt;
+                    padding-top: 0.5cm;
+                    border-top: 1px solid #000;
+                }
+            }
+
+            /* Body adjustments */
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            main {
+                padding: 0 !important;
+            }
+
+            /* Ensure content fits properly */
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            /* Style adjustments for print */
+            .hero-banner {
+                background: #fff !important;
+                border: 2px solid #000 !important;
+                page-break-inside: avoid;
+            }
+
+            .hero-card h1 {
+                color: #000 !important;
+            }
+
+            .metrics-row, .dashboard-grid {
+                page-break-inside: avoid;
+            }
+
+            .image-metric, .announcements-card, .updates-card {
+                border: 1px solid #000 !important;
+                background: #fff !important;
+                page-break-inside: avoid;
+            }
+
+            .metric-icon svg, .card-header {
+                color: #000 !important;
+                fill: #000 !important;
+            }
+
+            /* Remove colors from all elements */
+            svg {
+                stroke: #000 !important;
+                fill: #000 !important;
+            }
+        }
+
+        /* Download button styling */
+        .download-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #1e4620;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .download-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Download modal styling */
+        .download-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .download-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c5f2d;
+        }
+
+        .modal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-btn:hover {
+            background: #e8f5e9;
+            border-color: #2c5f2d;
+        }
+
+        .option-btn svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .cancel-btn {
+            background: #999;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: #777;
+        }
+    </style>
+    </head>
+
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="home.html" class="hom">HOME</a></li>
+                <li><a href="program.html" class="prog">PROGRAMS</a></li>
+                <li><a href="about.html" class="abo">ABOUT</a></li>
+                <li>
+                    <a href="profile.html" class="nav-profile" aria-label="Profile">
+                        <!-- simple user icon -->
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.5" fill="none" />
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Download PDF Button -->
+    <button class="download-btn" onclick="showDownloadModal()" title="Download as PDF">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 0 0 4.561 21h14.878a2 2 0 0 0 1.94-1.515L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Download PDF
+    </button>
+
+    <!-- Download Modal -->
+    <div id="downloadModal" class="download-modal">
+        <div class="modal-content">
+            <div class="modal-header">Choose what to download:</div>
+            <div class="modal-options">
+                <button class="option-btn" onclick="downloadPDF('metrics')">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/>
+                        <line x1="3" y1="15" x2="21" y2="15" stroke="currentColor" stroke-width="2"/>
+                        <line x1="9" y1="9" x2="9" y2="21" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Metrics Table Only
+                </button>
+                <button class="option-btn" onclick="downloadPDF('graphs')">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 3v18h18" stroke="currentColor" stroke-width="2"/>
+                        <path d="M7 14l4-4 3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="7" cy="14" r="1.5" fill="currentColor"/>
+                        <circle cx="11" cy="10" r="1.5" fill="currentColor"/>
+                        <circle cx="14" cy="13" r="1.5" fill="currentColor"/>
+                        <circle cx="19" cy="8" r="1.5" fill="currentColor"/>
+                    </svg>
+                    Visual Charts/Graphs
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="hideDownloadModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="container">
+
+    <!-- COMPRESSED HERO -->
+    <div class="hero-banner compressed-hero">
+        <div class="hero-card enhanced-hero small-hero">
+            <h1 class="hero-title">Nourishing Children. Empowering Communities.</h1>
+            <p class="hero-sub">
+                HAPAG-ASA brings donors, volunteers, and barangays together to fight hunger.
+            </p>
+            <div class="hero-buttons">
+                <a href="program.html" class="hero-btn primary">Programs</a>
+                <a href="about.html" class="hero-btn secondary">About</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMUNITY IN ACTION + METRICS INLINE LAYOUT -->
+    <section class="community-grid">
+        <div class="event-gallery compact-gallery">
+            <div class="gallery-carousel" aria-label="Community in Action gallery">
+                <div class="carousel-track">
+                    <div class="gallery-item mini-card" data-index="0">
+                        <img src="images/event-1-children-donation.jpg" class="gallery-image" alt="Children receiving food support">
+                        <div class="gallery-caption">
+                            <h3>Community Support</h3>
+                            <p>Children benefiting from feeding initiatives.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery-item mini-card" data-index="1">
+                        <img src="images/event-2-volunteers.jpg" class="gallery-image" alt="Volunteers during a donation drive">
+                        <div class="gallery-caption">
+                            <h3>Volunteer Movement</h3>
+                            <p>Volunteers conducting donation drives.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="carousel-btn prev" type="button" aria-label="Previous slide" onclick="moveGallerySlide(-1)">‹</button>
+                <button class="carousel-btn next" type="button" aria-label="Next slide" onclick="moveGallerySlide(1)">›</button>
+
+                <div class="carousel-dots" role="tablist">
+                    <button class="dot active" type="button" aria-label="Slide 1" onclick="goToGallerySlide(0)"></button>
+                    <button class="dot" type="button" aria-label="Slide 2" onclick="goToGallerySlide(1)"></button>
+                </div>
+            </div>
+        </div>
+
+        <aside class="sidebar-collapsible static-panel" id="sidebar">
+            <h3 class="side-title">Quick Metrics</h3>
+
+            <div class="side-metric">
+                <h4>Active Programs</h4>
+                <p>2 Active Programs</p>
+            </div>
+
+            <div class="side-metric">
+                <h4>Upcoming Drives</h4>
+                <p>2 Upcoming</p>
+            </div>
+
+            <div class="side-metric">
+                <h4>Volunteers</h4>
+                <p>34 Active</p>
+            </div>
+        </aside>
+    </section>
+
+</main>
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAraqQhEWlLxUP_XTOTZlgN7CAQOkuZbp8",
+            authDomain: "hapag-asa.firebaseapp.com",
+            projectId: "hapag-asa",
+            storageBucket: "hapag-asa.firebasestorage.app",
+            messagingSenderId: "533177839171",
+            appId: "1:533177839171:web:4cd74f4949f2449b09eef6",
+            measurementId: "G-GN23CK2SPX"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Show/Hide modal functions
+        function showDownloadModal() {
+            document.getElementById('downloadModal').classList.add('show');
+        }
+
+        function hideDownloadModal() {
+            document.getElementById('downloadModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('downloadModal');
+            if (event.target === modal) {
+                hideDownloadModal();
+            }
+        });
+
+        // Download PDF function with type parameter
+        async function downloadPDF(type) {
+            hideDownloadModal();
+            
+            const button = document.querySelector('.download-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span>Generating PDF...</span>';
+            button.disabled = true;
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const margin = 20;
+                let currentY = 30;
+                
+                // Add header
+                addHeader(pdf);
+                // Add generation timestamp
+                pdf.setFontSize(9);
+                pdf.setFont(undefined, 'normal');
+                const genTime = new Date().toLocaleString();
+                pdf.text(`Generated: ${genTime}`, margin, 25);
+                currentY += 8;
+                
+                if (type === 'metrics') {
+                    // Generate Metrics Table
+                    pdf.setFontSize(16);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('HAPAG-ASA Metrics Summary', 105, currentY, { align: 'center' });
+                    currentY += 15;
+                    
+                    // Determine metrics dynamically: try DOM first, then Firestore fallback
+                    async function fetchMetrics() {
+                        const metrics = { activePrograms: 0, upcomingDrives: 0, volunteers: 0 };
+
+                        // DOM approach: look for metric-body blocks used on the page
+                        const metricBodies = document.querySelectorAll('.metric-body');
+                        if (metricBodies && metricBodies.length) {
+                            metricBodies.forEach(b => {
+                                const title = b.querySelector('.metric-title')?.textContent?.trim().toLowerCase() || '';
+                                const value = b.querySelector('.metric-value')?.textContent?.trim() || '';
+                                if (title.includes('active programs') || title.includes('programs')) {
+                                    const num = parseInt(value.replace(/[^0-9]/g, ''), 10);
+                                    if (!isNaN(num)) metrics.activePrograms = num;
+                                } else if (title.includes('upcoming') || title.includes('drives')) {
+                                    const num = parseInt(value.replace(/[^0-9]/g, ''), 10);
+                                    if (!isNaN(num)) metrics.upcomingDrives = num;
+                                } else if (title.includes('volunteer') || title.includes('volunteers')) {
+                                    const num = parseInt(value.replace(/[^0-9]/g, ''), 10);
+                                    if (!isNaN(num)) metrics.volunteers = num;
+                                }
+                            });
+                        }
+
+                        // If DOM didn't provide metrics, fallback to Firestore queries
+                        if ((metrics.activePrograms === 0 || metrics.volunteers === 0) && typeof db !== 'undefined') {
+                            try {
+                                // Programs: count documents in 'programs' collection
+                                if (metrics.activePrograms === 0) {
+                                    try {
+                                        const progSnap = await db.collection('programs').get();
+                                        metrics.activePrograms = progSnap.size || progSnap.docs?.length || 0;
+                                    } catch (errProg) {
+                                        // ignore
+                                    }
+                                }
+
+                                // Volunteers: try 'volunteers' collection or users with role
+                                if (metrics.volunteers === 0) {
+                                    try {
+                                        const volSnap = await db.collection('volunteers').get();
+                                        metrics.volunteers = volSnap.size || volSnap.docs?.length || 0;
+                                    } catch (errVol) {
+                                        try {
+                                            const usersSnap = await db.collection('users').where('role', '==', 'volunteer').get();
+                                            metrics.volunteers = usersSnap.size || usersSnap.docs?.length || 0;
+                                        } catch (errUsers) {
+                                            // ignore
+                                        }
+                                    }
+                                }
+                            } catch (err) {
+                                console.warn('Error fetching metrics from Firestore', err);
+                            }
+                        }
+
+                        return metrics;
+                    }
+
+                    const fetchedMetrics = await fetchMetrics();
+                    const tableData = [
+                        ['Metric', 'Value'],
+                        ['Active Programs', `${fetchedMetrics.activePrograms} Active Programs`],
+                        ['Upcoming Drives', `${fetchedMetrics.upcomingDrives} Upcoming`],
+                        ['Volunteers', `${fetchedMetrics.volunteers} Active`]
+                    ];
+                    
+                    const colWidths = [90, 70];
+                    const rowHeight = 10;
+                    const tableX = margin;
+                    
+                    pdf.setFontSize(10);
+                    tableData.forEach((row, index) => {
+                        let x = tableX;
+                        
+                        if (index === 0) {
+                            pdf.setFont(undefined, 'bold');
+                            pdf.setFillColor(0, 0, 0);
+                            pdf.setTextColor(255, 255, 255);
+                            pdf.rect(x, currentY, colWidths[0] + colWidths[1], rowHeight, 'F');
+                        } else {
+                            pdf.setFont(undefined, 'normal');
+                            pdf.setTextColor(0, 0, 0);
+                        }
+                        
+                        row.forEach((cell, colIndex) => {
+                            if (index !== 0) {
+                                pdf.rect(x, currentY, colWidths[colIndex], rowHeight);
+                            }
+                            pdf.text(cell, x + 3, currentY + 7);
+                            x += colWidths[colIndex];
+                        });
+                        
+                        currentY += rowHeight;
+                    });
+                    
+                    // Reset text color
+                    pdf.setTextColor(0, 0, 0);
+                    currentY += 10;
+                    
+                    // Available Programs Section
+                    pdf.setFontSize(14);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Available Programs', 105, currentY, { align: 'center' });
+                    currentY += 10;
+                    
+                    // Fetch program entries from program.html .programs-list
+                    async function fetchProgramsForPDF() {
+                        const results = [];
+
+                        try {
+                            // Try to fetch program.html
+                            const response = await fetch('program.html');
+                            if (!response.ok) throw new Error('Failed to fetch program.html');
+                            
+                            const html = await response.text();
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            
+                            // Find all program cards in .programs-list
+                            const programCards = doc.querySelectorAll('.programs-list .program-card');
+                            console.log('Found program cards:', programCards.length);
+                            
+                            if (programCards && programCards.length > 0) {
+                                programCards.forEach((card, index) => {
+                                    // Extract program title from h2
+                                    const titleEl = card.querySelector('h2');
+                                    const name = titleEl ? titleEl.textContent.trim() : '';
+                                    
+                                    // Extract schedule from program-details
+                                    let startDate = '';
+                                    let endDate = '';
+                                    
+                                    const detailsDiv = card.querySelector('.program-details');
+                                    if (detailsDiv) {
+                                        // Get all inner divs and find the one with Schedule
+                                        const allDivs = detailsDiv.querySelectorAll('div');
+                                        allDivs.forEach(d => {
+                                            const text = d.textContent;
+                                            if (text.includes('Schedule:')) {
+                                                const scheduleText = text.replace('Schedule:', '').trim();
+                                                
+                                                // Parse dates: "December 20, 2025 10:00 AM" or "December 18-19, 2025 9:00 AM - 11:00 AM"
+                                                const dateMatch = scheduleText.match(/(\w+ \d+(?:-\d+)?, \d{4})/);
+                                                if (dateMatch) {
+                                                    startDate = dateMatch[0];
+                                                }
+                                            }
+                                        });
+                                    }
+                                    
+                                    if (name) {
+                                        results.push({
+                                            name,
+                                            type: 'Program',
+                                            start: startDate,
+                                            end: ''
+                                        });
+                                        console.log(`Card ${index + 1}:`, { name, start: startDate });
+                                    }
+                                });
+                            }
+                            
+                            if (results.length === 0) throw new Error('No programs found in fetched HTML');
+                            
+                        } catch (fetchErr) {
+                            console.warn('Fetch failed, using hardcoded fallback:', fetchErr.message);
+                            
+                            // Hardcoded fallback with the two current programs
+                            results.push({
+                                name: 'COMMUNITY FEEDING: HOLIDAY DRIVE',
+                                type: 'Program',
+                                start: 'December 20, 2025',
+                                end: ''
+                            });
+                            results.push({
+                                name: 'DONATION AND DISTRIBUTION',
+                                type: 'Program',
+                                start: 'December 18-19, 2025',
+                                end: ''
+                            });
+                            console.log('Using hardcoded program data');
+                        }
+
+                        console.log('Final programs list:', results);
+                        return results;
+                    }
+
+                    const programsList = await fetchProgramsForPDF();
+
+                    // Render programs table with columns: Name | Type | Date (combine start/end)
+                    const tableWidth = 200;
+                    const progTableX = (210 - tableWidth) / 2; // Center horizontally on A4 page (210mm width)
+                    const progRowHeight = 9;
+                    // three columns: name, type, date
+                    const progColWidths = [100, 50, 50];
+
+                    pdf.setFontSize(10);
+                    // Header row
+                    pdf.setFont(undefined, 'bold');
+                    pdf.setFillColor(0, 0, 0);
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.rect(progTableX, currentY, progColWidths.reduce((a,b)=>a+b,0), progRowHeight, 'F');
+                    let hx = progTableX;
+                    ['Program Name', 'Type', 'Date'].forEach((h, i) => {
+                        pdf.text(h, hx + 2, currentY + 6);
+                        hx += progColWidths[i];
+                    });
+                    currentY += progRowHeight;
+
+                    pdf.setFont(undefined, 'normal');
+                    pdf.setTextColor(0,0,0);
+
+                    if (!programsList.length) {
+                        pdf.text('No program entries found on this page.', progTableX, currentY + 6);
+                        currentY += progRowHeight;
+                    } else {
+                        for (let i=0;i<programsList.length;i++) {
+                            const p = programsList[i];
+
+                            // Page break if needed
+                            if (currentY + progRowHeight > 277) {
+                                pdf.addPage();
+                                await addFooter(pdf, pdf.internal.getNumberOfPages());
+                                addHeader(pdf);
+                                currentY = 30;
+                            }
+
+                            let x = progTableX;
+                            // Combine start and end into a single Date cell
+                            const dateCell = (p.start && p.end) ? `${p.start} - ${p.end}` : (p.start || p.end || '');
+                            const cells = [p.name || '', p.type || '', dateCell];
+                            for (let c=0;c<cells.length;c++) {
+                                const text = String(cells[c] || '');
+                                pdf.text(text, x + 2, currentY + 6);
+                                x += progColWidths[c];
+                            }
+                            currentY += progRowHeight;
+                        }
+                    }
+                    
+                } else if (type === 'graphs') {
+                    // Generate Visual Charts/Graphs
+                    pdf.setFontSize(16);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('HAPAG-ASA Visual Report', 105, currentY, { align: 'center' });
+                    currentY += 20;
+                    
+                    // Create bar chart for metrics
+                    const chartX = 40;
+                    const chartY = currentY;
+                    const chartWidth = 130;
+                    const chartHeight = 80;
+                    const barWidth = 25;
+                    const maxHeight = 70;
+                    
+                    // Hardcoded metrics for graphs
+                    const data = [
+                        { label: 'Programs', value: 2, max: 5 },
+                        { label: 'Drives', value: 2, max: 5 },
+                        { label: 'Volunteers', value: 34, max: 100 }
+                    ];
+                    
+                    pdf.setFontSize(12);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Key Metrics Overview', chartX, chartY - 5);
+                    
+                    // Draw axes
+                    pdf.setLineWidth(0.5);
+                    pdf.line(chartX, chartY + maxHeight, chartX + chartWidth, chartY + maxHeight); // X-axis
+                    pdf.line(chartX, chartY, chartX, chartY + maxHeight); // Y-axis
+                    
+                    // Draw bars
+                    pdf.setFont(undefined, 'normal');
+                    pdf.setFontSize(9);
+                    data.forEach((item, index) => {
+                        const x = chartX + 15 + (index * 35);
+                        const barHeight = (item.value / item.max) * maxHeight;
+                        const y = chartY + maxHeight - barHeight;
+                        
+                        // Draw bar
+                        pdf.setFillColor(100, 100, 100);
+                        pdf.rect(x, y, barWidth, barHeight, 'F');
+                        
+                        // Draw value on top
+                        pdf.text(String(item.value), x + barWidth/2, y - 3, { align: 'center' });
+                        
+                        // Draw label
+                        pdf.text(item.label, x + barWidth/2, chartY + maxHeight + 7, { align: 'center' });
+                    });
+                    
+                    // Add explanation text below chart
+                    currentY = chartY + maxHeight + 30;
+                    pdf.setFontSize(10);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Metrics Summary:', chartX, currentY);
+                    
+                    currentY += 8;
+                    pdf.setFont(undefined, 'normal');
+                    pdf.setFontSize(9);
+                    const explanations = [
+                        '• Programs: Number of active community feeding and support programs currently running.',
+                        '• Drives: Number of upcoming donation drives and community outreach events scheduled.',
+                        '• Volunteers: Total number of active volunteers participating in HAPAG-ASA initiatives.'
+                    ];
+                    
+                    explanations.forEach(text => {
+                        // Word wrap for long text
+                        const lines = pdf.splitTextToSize(text, 150);
+                        lines.forEach(line => {
+                            if (currentY > 270) {
+                                pdf.addPage();
+                                addHeader(pdf);
+                                currentY = 30;
+                            }
+                            pdf.text(line, chartX, currentY);
+                            currentY += 6;
+                        });
+                    });
+                    
+                }
+                
+                // Add footer (await because it's now async)
+                await addFooter(pdf, 1);
+                
+                // Save the PDF
+                const filename = `HAPAG-ASA_${type === 'metrics' ? 'Metrics' : 'Charts'}_${new Date().toISOString().split('T')[0]}.pdf`;
+                pdf.save(filename);
+                
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+        
+        function addHeader(pdf) {
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('HAPAG-ASA Community Portal', 105, 15, { align: 'center' });
+            pdf.setLineWidth(0.5);
+            pdf.line(20, 18, 190, 18);
+        }
+        
+        async function addFooter(pdf, pageNum) {
+            // Get username from user profile
+            let username = 'Guest User';
+            
+            if (typeof auth !== 'undefined' && auth.currentUser) {
+                try {
+                    const doc = await db.collection('userProfiles').doc(auth.currentUser.uid).get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        // Use full name from profile, or fallback to firstName + lastName
+                        username = data.fullName || `${data.firstName || ''} ${data.lastName || ''}`.trim();
+                        
+                        // If still empty, use email or default
+                        if (!username) {
+                            username = auth.currentUser.email || 'User';
+                        }
+                    } else {
+                        // No profile yet, use email
+                        username = auth.currentUser.email || 'User';
+                    }
+                } catch (error) {
+                    console.error('Error fetching user profile:', error);
+                    username = auth.currentUser.email || 'User';
+                }
+            }
+            
+            pdf.setFontSize(9);
+            pdf.setFont(undefined, 'normal');
+            pdf.setLineWidth(0.5);
+            pdf.line(20, 279, 190, 279);
+            pdf.text(username, 20, 285);
+            pdf.text(`Page ${pageNum} of 1`, 190, 285, { align: 'right' });
+        }
+
+        // Safe notification helper: only runs when firebase `auth` and `db` are available
+        function showUserNotification(message) {
+            const notif = document.getElementById('userNotification');
+            if (!notif) return;
+            notif.textContent = message;
+            notif.style.display = 'block';
+            setTimeout(() => { notif.style.display = 'none'; }, 5000);
+        }
+
+        if (typeof auth !== 'undefined' && typeof db !== 'undefined') {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    db.collection('applications')
+                      .where('uid', '==', user.uid)
+                      .onSnapshot(snapshot => {
+                          snapshot.docChanges().forEach(change => {
+                              if (change.type === 'modified') {
+                                  const app = change.doc.data();
+                                  if (app.status === 'approved') {
+                                      showUserNotification(`✅ Your application for "${app.programName}" has been approved!`);
+                                  }
+                              }
+                          });
+                      });
+                }
+            });
+        }
+    </script>
+
+    <script>
+// Simple two-slide carousel for the Community gallery
+let galleryCurrentSlide = 0;
+
+function updateGalleryCarousel() {
+    const track = document.querySelector('.carousel-track');
+    const slides = document.querySelectorAll('.gallery-carousel .gallery-item');
+    const dots = document.querySelectorAll('.gallery-carousel .dot');
+    if (!track || !slides.length) return;
+
+    const offset = -galleryCurrentSlide * 100;
+    track.style.transform = `translateX(${offset}%)`;
+
+    dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === galleryCurrentSlide);
+    });
+}
+
+function moveGallerySlide(delta) {
+    const slides = document.querySelectorAll('.gallery-carousel .gallery-item');
+    if (!slides.length) return;
+    galleryCurrentSlide = (galleryCurrentSlide + delta + slides.length) % slides.length;
+    updateGalleryCarousel();
+}
+
+function goToGallerySlide(index) {
+    const slides = document.querySelectorAll('.gallery-carousel .gallery-item');
+    if (!slides.length) return;
+    galleryCurrentSlide = Math.max(0, Math.min(index, slides.length - 1));
+    updateGalleryCarousel();
+}
+
+document.addEventListener('DOMContentLoaded', updateGalleryCarousel);
+</script>
+
+    <script>
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+}
+</script>
+
+
+</body>
+</html>

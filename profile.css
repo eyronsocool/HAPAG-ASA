@@ -1,0 +1,473 @@
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5fdf6;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+        background: linear-gradient(90deg, #373ebd 0%, #2784ee 100%);
+        padding: 1.2rem 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    nav {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 2rem;
+        width: 100%;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: white;
+        font-size: 1.8rem;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 2rem;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2.5rem;
+        list-style: none;
+        margin-left: auto;
+    }
+
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.3rem;
+        transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+        opacity: 0.8;
+    }
+
+    .nav-links a.active {
+      color: #ffeb3b;
+    }
+
+    /* Profile icon-only link in the navbar (matches home) */
+    .nav-profile {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.10);
+      color: white;
+      padding: 6px;
+      transition: background 160ms ease, transform 160ms ease;
+    }
+
+    .nav-profile svg { width: 20px; height: 20px; display:block; color: white; }
+
+    .nav-profile:hover {
+      background: rgba(255,255,255,0.18);
+      transform: translateY(-2px);
+    }
+
+    .nav-profile.active {
+      background: rgba(255,235,59,0.12);
+      color: #ffeb3b;
+    }
+
+    .profile-container {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 2rem;
+    }
+
+    .profile-card {
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .profile-icon {
+      font-size: 3rem;
+    }
+
+    .profile-title {
+      color: #2e7d32;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-subtitle {
+      color: #6b7280;
+      font-size: 1rem;
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      color: #2e7d32;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e8f5e9;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #374151;
+      font-size: 0.95rem;
+    }
+
+    label .required {
+      color: #ef4444;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #66bb6a;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(102,187,106,0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,187,106,0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .success-message {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    .info-message {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem 1.5rem;
+      }
+
+      nav {
+        gap: 1.5rem;
+      }
+
+      .logo {
+        font-size: 1.4rem;
+        gap: 10px;
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+
+      .nav-links a {
+        font-size: 0.95rem;
+      }
+
+      .profile-container {
+        padding: 1rem;
+        margin: 2rem auto;
+      }
+
+      .profile-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .profile-icon {
+        font-size: 2.5rem;
+      }
+
+      .profile-title {
+        font-size: 1.7rem;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .form-section {
+        margin-bottom: 1.5rem;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+      }
+
+      input, select, textarea {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary {
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
+      }
+
+      .message {
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+      }
+    }
+
+    /* Small Mobile (up to 480px) */
+    @media (max-width: 480px) {
+      header {
+        padding: 0.8rem 1rem;
+      }
+
+      nav {
+        gap: 1rem;
+      }
+
+      .logo {
+        font-size: 1.1rem;
+        gap: 8px;
+      }
+
+      .logo-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+      }
+
+      .nav-links {
+        gap: 0.5rem;
+      }
+
+      .nav-links a {
+        font-size: 0.75rem;
+      }
+
+      .profile-container {
+        padding: 0.8rem;
+        margin: 1.5rem auto;
+      }
+
+      .profile-card {
+        padding: 1.5rem 1.2rem;
+        border-radius: 15px;
+      }
+
+      .profile-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+      }
+
+      .profile-icon {
+        font-size: 2rem;
+      }
+
+      .profile-title {
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .profile-subtitle {
+        font-size: 0.85rem;
+      }
+
+      .form-section {
+        margin-bottom: 1.2rem;
+      }
+
+      .section-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-row {
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .form-group {
+        margin-bottom: 0.8rem;
+      }
+
+      label {
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+      }
+
+      input, select, textarea {
+        padding: 0.6rem;
+        font-size: 16px;
+        border-radius: 8px;
+      }
+
+      textarea {
+        min-height: 80px;
+      }
+
+      .btn-primary {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.95rem;
+        margin-top: 0.8rem;
+        border-radius: 8px;
+      }
+
+      .message {
+        padding: 0.7rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+      }
+
+      .logout-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+    }

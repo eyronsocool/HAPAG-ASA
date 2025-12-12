@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAPAG-ASA - Programs</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="program.css">
+    </head>
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="home.html">HOME</a></li>
+                <li><a href="program.html" class="prog">PROGRAMS</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+                <li>
+                    <a href="profile.html" class="nav-profile active" aria-label="Profile">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.5" fill="none" />
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Welcome hero and top metrics removed per request -->
+
+
+
+
+        <div class="encourage-message" aria-hidden="false">
+            <p>Join us in making a difference — volunteer or donate today to help nourish families in need.</p>
+        </div>
+
+        <div class="programs-list">
+            <div class="program-card">
+                <h2>COMMUNITY FEEDING: HOLIDAY DRIVE </h2>
+                <div class="program-details">
+                    <div><strong>Location:</strong> Brgy. Barreto Basketball Court, Barreto, Olongapo City</div>
+                    <div><strong>Schedule:</strong> December 20, 2025 10:00 AM</div>
+                    <div><strong>Description:</strong> Feeding program for undernourished children in Brgy. Barreto</div>
+                </div>
+                <div class="program-actions">
+                    <a href="donation.html" class="btn-donate">Donate</a>
+                    <button class="btn-outline" onclick="applyForProgram('Brgy. Barreto Feeding Program', 'barreto-feeding')">
+                        Beneficiary
+                    </button>
+                </div>
+            </div>
+
+            <div id="userNotification" class="user-notification"></div>
+
+            <div class="program-card">
+                <h2>DONATION AND DISTRIBUTION</h2>
+                <div class="program-details">
+                    <div><strong>Location:</strong> Brgy. Mabayuan, Olongapo City</div>
+                    <div><strong>Schedule:</strong> December 18, 2025 9:00 AM - 11:00 AM</div>
+                    <div><strong>Description:</strong> Nutrition support for pregnant women in Gordon Heights</div>
+                </div>
+                <div class="program-actions">
+                    <a href="donation.html" class="btn-donate">Donate</a>
+                    <button class="btn-outline" onclick="applyForProgram('Brgy. Gordon Heights Nutrition Drive', 'gordon-nutrition')">
+                        Beneficiary
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAraqQhEWlLxUP_XTOTZlgN7CAQOkuZbp8",
+            authDomain: "hapag-asa.firebaseapp.com",
+            projectId: "hapag-asa",
+            storageBucket: "hapag-asa.appspot.com",
+            messagingSenderId: "533177839171",
+            appId: "1:533177839171:web:4cd74f4949f2449b09eef6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        async function applyForProgram(programName, programId) {
+            const user = auth.currentUser;
+            
+            if (!user) {
+                alert('Please login first to apply for this program.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // Check if profile is complete
+                const profileDoc = await db.collection("userProfiles").doc(user.uid).get();
+                
+                if (!profileDoc.exists || !profileDoc.data().profileComplete) {
+                    if (confirm('Please complete your profile first before applying. Go to profile page now?')) {
+                        window.location.href = 'profile.html';
+                    }
+                    return;
+                }
+
+                // Check if already applied
+                const existingApplication = await db.collection("applications")
+                    .where("uid", "==", user.uid)
+                    .where("programId", "==", programId)
+                    .get();
+
+                if (!existingApplication.empty) {
+                    alert('You have already applied for this program. Please wait for admin review.');
+                    return;
+                }
+
+                const profileData = profileDoc.data();
+
+                // Create application
+                const applicationData = {
+                    uid: user.uid,
+                    email: user.email,
+                    programName: programName,
+                    programId: programId,
+                    applicantInfo: {
+                        fullName: profileData.fullName,
+                        firstName: profileData.firstName,
+                        lastName: profileData.lastName,
+                        birthdate: profileData.birthdate,
+                        gender: profileData.gender,
+                        phone: profileData.phone,
+                        barangay: profileData.barangay,
+                        address: profileData.address,
+                        householdSize: profileData.householdSize,
+                        monthlyIncome: profileData.monthlyIncome,
+                        specialNeeds: profileData.specialNeeds
+                    },
+                    status: 'pending',
+                    appliedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    reviewedAt: null,
+                    reviewedBy: null
+                };
+
+                await db.collection("applications").add(applicationData);
+                
+                alert('✅ Application submitted successfully!\n\nYour application for "' + programName + '" has been sent to the admin for review. You will be notified once it is processed.');
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                alert('❌ Error submitting application: ' + error.message);
+            }
+
+        } // end applyForProgram
+
+  // Listen for application status changes
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      db.collection("applications")
+        .where("uid", "==", user.uid)
+        .onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            if (change.type === "modified") {
+              const app = change.doc.data();
+              if (app.status === "approved") {
+                showUserNotification(`✅ Your application for "${app.programName}" has been approved!`);
+              }
+            }
+          });
+        });
+    }
+  });
+
+  
+  function showUserNotification(message) {
+    const notif = document.getElementById("userNotification");
+    notif.textContent = message;
+    notif.style.display = "block";
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      notif.style.display = "none";
+    }, 5000);
+  }
+
+
+
+</script>
+
+<!-- Footer added from about page (moved inside body) -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>HAPAG-ASA</h3>
+            <p>
+                Connecting communities to fight hunger in Olongapo City through 
+                transparent, community-driven feeding programs.
+            </p>
+        </div>
+        <div class="footer-section">
+            <h3>CONTACT US</h3>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span>📞</span>
+                    <span>09-9498-26432</span>
+                </div>
+                <div class="contact-item">
+                    <span>✉️</span>
+                    <span>hapag-asa@gmail.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

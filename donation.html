@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate - HAPAG-ASA</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="donation.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo">
+                <div class="logo-icon">🍲</div>
+                <span>HAPAG-ASA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="home.html">HOME</a></li>
+                <li><a href="program.html">PROGRAMS</a></li>
+                <li><a href="about.html">ABOUT</a></li>
+                <li>
+                    <a href="profile.html" class="nav-profile" aria-label="Profile">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.5" fill="none" />
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="donation-wrapper">
+            <!-- Left Column: Donation Form -->
+            <div class="donation-form-col">
+                <!-- Hero Banner -->
+                <div class="donation-hero">
+                    <div class="hero-pill"><span class="pill-circle"></span></div>
+                    <h1>Make Change Lives</h1>
+                    <p>Your donation provides nutritious meals to children and families in Olongapo City</p>
+                </div>
+
+                <!-- Amount Selection -->
+                <div class="form-section">
+                    <h3>Select Your Impact</h3>
+                    <div class="amount-grid">
+                        <button class="amount-option" onclick="selectAmount(500, this)">
+                            <div class="amount-value">₱500</div>
+                            <div class="amount-desc">Feeds 5 children</div>
+                        </button>
+                        <button class="amount-option" onclick="selectAmount(2500, this)">
+                            <div class="amount-value">₱2,500</div>
+                            <div class="amount-desc">Feeds 25 children</div>
+                        </button>
+                        <button class="amount-option" onclick="selectAmount(5000, this)">
+                            <div class="amount-value">₱5,000</div>
+                            <div class="amount-desc">Feeds 50 children</div>
+                        </button>
+                    </div>
+
+                    <div class="custom-amount-section">
+                        <h4>Custom Amount</h4>
+                        <input type="number" id="customAmount" placeholder="Enter custom amount" min="1">
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="form-section">
+                    <h3>Payment Method</h3>
+                    <div class="payment-grid">
+                        <button class="payment-option" onclick="selectPayment('gcash')">
+                            <div class="payment-icon">💳</div>
+                            <div>GCash</div>
+                            <div class="payment-status">Instant processing</div>
+                        </button>
+                        <button class="payment-option" onclick="selectPayment('paymaya')">
+                            <div class="payment-icon">💳</div>
+                            <div>PayMaya</div>
+                            <div class="payment-status">Instant processing</div>
+                        </button>
+                        <button class="payment-option" onclick="selectPayment('bank')">
+                            <div class="payment-icon">🏦</div>
+                            <div>Bank Transfer</div>
+                            <div class="payment-status">Instant processing</div>
+                        </button>
+                        <button class="payment-option" onclick="selectPayment('credit')">
+                            <div class="payment-icon">💳</div>
+                            <div>Credit Card</div>
+                            <div class="payment-status">Instant processing</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Donor Information -->
+                <div class="form-section">
+                    <h3>Your Information</h3>
+                    <div class="form-row">
+                        <input type="text" id="donorName" placeholder="First Name" class="form-input">
+                        <input type="text" id="donorLastName" placeholder="Last Name" class="form-input">
+                    </div>
+                    <input type="email" id="donorEmail" placeholder="Email Address" class="form-input full-width">
+                    <input type="tel" id="donorPhone" placeholder="+63 912 345 6789" class="form-input full-width">
+                    <textarea id="message" placeholder="Share your message with the community..." class="form-input full-width" rows="3"></textarea>
+                </div>
+
+                <!-- Info Box -->
+                <div class="info-box">
+                    <div class="info-icon">ℹ️</div>
+                    <p>Your information is secure and will only be used to process your donation and send a receipt</p>
+                </div>
+
+                <!-- Donate Button -->
+                <button class="btn-donate-large" onclick="processDonation()" id="donateBtn">Complete Donation of ₱2,500</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAraqQhEWlLxUP_XTOTZlgN7CAQOkuZbp8",
+            authDomain: "hapag-asa.firebaseapp.com",
+            projectId: "hapag-asa",
+            storageBucket: "hapag-asa.appspot.com",
+            messagingSenderId: "533177839171",
+            appId: "1:533177839171:web:4cd74f4949f2449b09eef6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let selectedAmount = 2500; // default amount aligns with highlighted button
+        let selectedPaymentMethod = '';
+
+        function selectAmount(amount, buttonEl) {
+            const buttons = document.querySelectorAll('.amount-option');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+
+            if (buttonEl) {
+                buttonEl.classList.add('selected');
+            }
+
+            selectedAmount = amount;
+            document.getElementById('customAmount').value = '';
+            updateDonateButton();
+        }
+
+        function selectPayment(method) {
+            const methods = document.querySelectorAll('.payment-option');
+            methods.forEach(m => m.classList.remove('selected'));
+            event.target.closest('.payment-option').classList.add('selected');
+            selectedPaymentMethod = method;
+        }
+
+        function updateDonateButton() {
+            const donateBtn = document.getElementById('donateBtn');
+            if (selectedAmount > 0) {
+                donateBtn.textContent = `Complete Donation of ₱${selectedAmount.toLocaleString()}`;
+                donateBtn.disabled = false;
+            } else {
+                donateBtn.textContent = 'Select a donation amount';
+                donateBtn.disabled = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize default preset (₱2,500) as selected
+            const amountButtons = document.querySelectorAll('.amount-option');
+            if (amountButtons.length > 1) {
+                amountButtons[1].classList.add('selected');
+            }
+            
+            // Update donate button with default amount
+            updateDonateButton();
+            
+            const customAmountInput = document.getElementById('customAmount');
+            if (customAmountInput) {
+                customAmountInput.addEventListener('input', function(e) {
+                    const value = parseInt(e.target.value, 10);
+                    selectedAmount = Number.isFinite(value) && value > 0 ? value : 0;
+                    document.querySelectorAll('.amount-option').forEach(btn => btn.classList.remove('selected'));
+                    updateDonateButton();
+                });
+            }
+        });
+
+        async function processDonation() {
+            const programSelectEl = document.getElementById('programSelect');
+            const programSelect = programSelectEl ? programSelectEl.value : 'general';
+            const name = document.getElementById('donorName').value.trim();
+            const email = document.getElementById('donorEmail').value.trim();
+            const phone = document.getElementById('donorPhone').value.trim();
+            const customAmount = document.getElementById('customAmount').value;
+            const message = document.getElementById('message').value.trim();
+            
+            if (customAmount) {
+                selectedAmount = parseInt(customAmount);
+            }
+            
+            // Validation
+            if (programSelectEl && !programSelect) {
+                alert('Please select a program to support.');
+                return;
+            }
+
+            if (!name || !email || !phone) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (selectedAmount <= 0) {
+                alert('Please select or enter a donation amount.');
+                return;
+            }
+            
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            const donateBtn = document.getElementById('donateBtn');
+            const originalText = donateBtn.innerHTML;
+            donateBtn.disabled = true;
+            donateBtn.innerHTML = '<span style="display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></span> Processing...';
+
+            try {
+                // Get program name
+                let programName = '';
+                switch(programSelect) {
+                    case 'barreto-feeding':
+                        programName = 'Brgy. Barreto Feeding Program';
+                        break;
+                    case 'gordon-nutrition':
+                        programName = 'Gordon Heights Nutrition Drive';
+                        break;
+                    case 'general':
+                    default:
+                        programName = 'General Fund';
+                        break;
+                }
+
+                // Create donation record
+                const donationData = {
+                    donorName: name,
+                    donorEmail: email,
+                    donorPhone: phone,
+                    amount: selectedAmount,
+                    programId: programSelect,
+                    programName: programName,
+                    paymentMethod: selectedPaymentMethod,
+                    message: message || '',
+                    status: 'completed',
+                    donatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    uid: auth.currentUser ? auth.currentUser.uid : null
+                };
+
+                await db.collection('donations').add(donationData);
+
+                // Show success message
+                alert(`Thank you, ${name}!\n\n✅ Donation Successful!\n\nAmount: ₱${selectedAmount.toLocaleString()}\nProgram: ${programName}\nPayment Method: ${selectedPaymentMethod.toUpperCase()}\n\nYou will receive a confirmation email shortly.`);
+                
+                // Reset form
+                if (programSelectEl) {
+                    programSelectEl.value = '';
+                }
+                document.getElementById('donorName').value = '';
+                document.getElementById('donorEmail').value = '';
+                document.getElementById('donorPhone').value = '';
+                document.getElementById('customAmount').value = '';
+                document.getElementById('message').value = '';
+                selectedAmount = 0;
+                selectedPaymentMethod = '';
+                
+                const buttons = document.querySelectorAll('.amount-btn');
+                buttons.forEach(btn => btn.classList.remove('selected'));
+                
+                const methods = document.querySelectorAll('.payment-method');
+                methods.forEach(m => m.classList.remove('selected'));
+
+                donateBtn.disabled = false;
+                donateBtn.innerHTML = originalText;
+
+            } catch (error) {
+                console.error('Error processing donation:', error);
+                alert('❌ Error processing donation: ' + error.message);
+                donateBtn.disabled = false;
+                donateBtn.innerHTML = originalText;
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>

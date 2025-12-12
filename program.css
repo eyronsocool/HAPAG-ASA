@@ -1,0 +1,612 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body { height: 100%; }
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+
+main.container { flex: 1 0 auto; }
+
+footer { margin-top: auto; }
+
+/* Profile icon-only link in the navbar */
+.nav-profile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    color: white;
+    padding: 6px;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.nav-profile svg { width: 20px; height: 20px; display:block; color: white; }
+
+.nav-profile:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); }
+
+.nav-profile.active { background: rgba(255,235,59,0.12); color: #ffeb3b; }
+
+/* Header */
+header {
+    background: linear-gradient(90deg, #373ebd 0%, #2784ee 100%);
+    padding: 1.2rem 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2rem;
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    margin-left: auto;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.3rem;
+    transition: opacity 0.3s;
+}
+
+.nav-links a:hover {
+    opacity: 0.8;
+}
+
+.nav-links a.prog {
+    color: #fff59d; /* Soft yellow highlight */
+}
+
+/* Main Content */
+.container {
+    /* Allow more horizontal space so two columns can fill the layout */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4.5rem 1.5rem 3rem; /* push content down a bit and add bottom space */
+}
+
+.user-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #22c55e;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-weight: 600;
+  display: none;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Page Title */
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    justify-content: center;
+}
+
+/* Reuse hero/metric styles for program page */
+.hero-banner { width: 100%; display:flex; justify-content:center; margin-bottom:1.5rem; }
+.hero-card { width:100%; max-width:1100px; border-radius:12px; padding:2rem 2.5rem; background: linear-gradient(90deg,#00bfa5 0%, #1e88e5 100%); color:white; box-shadow:0 8px 30px rgba(30,136,229,0.12); }
+.hero-card h1 { font-size:1.8rem; margin-bottom:0.25rem; font-weight:700; }
+.hero-sub { opacity:0.95; font-size:1rem; margin-top:0.2rem; }
+.metrics-row { display:flex; gap:1rem; width:100%; max-width:1100px; margin:0 auto 2rem auto; }
+.metric-card { flex:1; background:white; border-radius:10px; padding:1rem 1.2rem; box-shadow:0 6px 18px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.03); display:flex; flex-direction:column; justify-content:center; gap:0.25rem; }
+.metric-title { color:#2e7d32; font-weight:700; font-size:1rem; }
+.metric-value { color:#444; font-weight:700; font-size:1.1rem; }
+
+/* Dashboard grid support for program page */
+.dashboard-grid { display:grid; grid-template-columns: 2fr 1fr; gap:1.5rem; width:100%; max-width:1100px; margin:0 auto 2rem auto; }
+.announcements-card, .updates-card { background:white; border-radius:12px; padding:1rem; box-shadow:0 8px 25px rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.04); }
+.card-header { display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0.4rem; border-bottom:1px solid rgba(0,0,0,0.04); margin-bottom:1rem; }
+.card-title { font-weight:700; color:#2e7d32; }
+.view-all { font-size:0.85rem; background:#fff; padding:4px 8px; border-radius:12px; border:1px solid rgba(0,0,0,0.06); text-decoration:none; color:#2e7d32 }
+
+@media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+.title-icon {
+    font-size: 3rem;
+}
+
+.page-title h1 {
+    color: #56a625;
+    font-size: 2.8rem;
+    font-weight: 800;
+}
+
+/* Program Cards */
+.programs-list {
+    /* Two-column grid so both program cards are identical size */
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    align-items: stretch; /* ensure items stretch to same height */
+    grid-auto-rows: 1fr; /* make rows equal height */
+    width: 100%;
+    max-width: 1100px;
+    margin: 2.5rem 0 2.5rem 0; /* keep vertical spacing */
+    padding: 0; /* no extra inner padding so widths align */
+    justify-items: stretch;
+}
+
+.program-card {
+    background: linear-gradient(180deg, #fff 0%, #fbfbfb 100%);
+    border-radius: 12px;
+    padding: 1.6rem 1.6rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+    border: 1px solid #e1e8e1;
+    border-left: 6px solid #66bb6a;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* pushes actions to bottom */
+    height: 100%;
+    /* in grid layout each card will fill its cell and match height */
+    height: 100%;
+    min-width: 0;
+}
+
+/* Encouraging message styling */
+.encourage-message {
+    max-width: 1100px;
+    margin: 1.25rem auto 0 auto; /* center horizontally */
+    padding: 0.6rem 0.8rem;
+    text-align: center; /* center the text */
+}
+.encourage-message p {
+    color: #0b4f1a;
+    font-weight: 800;
+    font-size: 1.25rem;
+    background: linear-gradient(90deg, rgba(102,187,106,0.08), rgba(102,187,106,0.04));
+    padding: 0.8rem 1.1rem;
+    border-radius: 10px;
+    display: inline-block; /* keep the banner width tight */
+    max-width: 95%;
+    letter-spacing: 0.2px;
+    box-shadow: 0 6px 18px rgba(11,79,26,0.06);
+}
+
+.program-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+}
+
+.program-card h2 {
+    color: #0f3f19;
+    font-size: 1.9rem;
+    margin-bottom: 0.9rem;
+    font-weight: 800;
+    line-height: 1.12;
+}
+
+.program-details {
+    color: #222;
+    line-height: 1.7;
+    margin-bottom: 1.1rem;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    flex: 1 1 auto; /* allow details to grow so cards align */
+}
+
+.program-details div {
+    margin-bottom: 0.55rem;
+    font-size: 1.05rem;
+}
+
+.program-details strong {
+    font-weight: 700; /* labels bold */
+    margin-right: 6px;
+}
+
+.program-details span.value { font-weight: 400; }
+
+.program-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.8rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.85rem 1.6rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 150ms ease, box-shadow 150ms ease;
+    text-transform: none;
+}
+
+.btn-donate {
+    background: linear-gradient(180deg,#56a625 0%, #2e7d32 100%);
+    color: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 0.95rem 1.6rem;
+    border-radius: 12px;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.btn-donate:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 20px rgba(46,125,50,0.08); }
+
+.btn-outline {
+    background: transparent;
+    color: #2e7d32;
+    border: 2px solid #2e7d32;
+    padding: 0.65rem 1.1rem;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.btn-outline:hover { transform: translateY(-2px); background: rgba(46,125,50,0.04); }
+
+/* Tablet/iPad (768px - 1024px) */
+@media (max-width: 1024px) {
+    header {
+        padding: 1rem 1.5rem;
+    }
+    
+    nav {
+        gap: 1.5rem;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+        gap: 12px;
+    }
+    
+    .logo-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.8rem;
+    }
+    
+    .nav-links {
+        gap: 1.5rem;
+    }
+    
+    .nav-links a {
+        font-size: 1.1rem;
+    }
+    
+    .container {
+        padding: 2.5rem 1.5rem;
+    }
+    
+    .page-title h1 {
+        font-size: 2.2rem;
+    }
+    
+    .title-icon {
+        font-size: 2.5rem;
+    }
+    
+    .program-card {
+        padding: 2rem;
+    }
+    
+    .program-card h2 {
+        font-size: 1.6rem;
+    }
+    
+    .program-details div {
+        font-size: 1.03rem;
+    }
+
+    .encourage-message p {
+        font-size: 1.1rem;
+        padding: 0.7rem 1rem;
+    }
+    
+    .btn-support {
+        font-size: 0.95rem;
+        padding: 0.7rem 1.8rem;
+    }
+}
+
+/* Mobile (up to 767px) */
+@media (max-width: 767px) {
+    header {
+        padding: 1rem 1rem;
+    }
+    
+    nav {
+        gap: 1rem;
+    }
+    
+    .logo {
+        font-size: 1.3rem;
+        gap: 10px;
+    }
+    
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    
+    .nav-links {
+        gap: 1rem;
+    }
+    
+    .nav-links a {
+        font-size: 0.95rem;
+    }
+    
+    .container {
+        padding: 2rem 1rem;
+    }
+    
+    .page-title {
+        margin-bottom: 2rem;
+        gap: 0.5rem;
+    }
+    
+    .page-title h1 {
+        font-size: 1.6rem;
+    }
+    
+    .title-icon {
+        font-size: 2rem;
+    }
+    
+    .programs-list {
+        /* collapse to single column on smaller screens */
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0.9rem;
+        border-width: 2px;
+        border-radius: 12px;
+    }
+    
+    .program-card {
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .program-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 1.2rem;
+    }
+    
+    .program-details {
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
+    }
+    
+    .program-details div {
+        font-size: 0.95rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .encourage-message p {
+        font-size: 1rem;
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .program-actions {
+        gap: 0.8rem;
+        margin-top: 1.2rem;
+    }
+    
+    .btn-donate {
+        padding: 0.85rem 1.4rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-outline {
+        padding: 0.65rem 1.1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+    header {
+        padding: 0.8rem 0.8rem;
+    }
+    
+    .logo {
+        font-size: 1.1rem;
+        gap: 8px;
+    }
+    
+    .logo-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+    }
+    
+    .nav-links {
+        gap: 0.6rem;
+    }
+    
+    .nav-links a {
+        font-size: 0.8rem;
+    }
+    
+    .container {
+        padding: 1.5rem 0.8rem;
+    }
+    
+    .page-title {
+        flex-direction: column;
+        margin-bottom: 1.5rem;
+        gap: 0.5rem;
+    }
+    
+    .page-title h1 {
+        font-size: 1.3rem;
+        line-height: 1.3;
+    }
+    
+    .title-icon {
+        font-size: 2.5rem;
+    }
+    
+    .programs-list {
+        gap: 1.2rem;
+        grid-template-columns: 1fr;
+    }
+    
+    .program-card {
+        padding: 1.2rem;
+        border-radius: 12px;
+    }
+    
+    .program-card h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .program-details {
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+    
+    .program-details div {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .encourage-message p {
+        font-size: 0.95rem;
+        padding: 0.5rem 0.6rem;
+    }
+    
+    .program-actions {
+        gap: 0.6rem;
+        margin-top: 1rem;
+        flex-direction: column;
+    }
+    
+    .btn-donate {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    .btn-outline {
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        width: 100%;
+    }
+}
+
+/* Very Small Mobile (up to 360px) */
+@media (max-width: 360px) {
+    .page-title h1 {
+        font-size: 1.1rem;
+    }
+    
+    .program-card h2 {
+        font-size: 1.1rem;
+    }
+    
+    .program-details div {
+        font-size: 0.8rem;
+    }
+    
+    .btn-support {
+        font-size: 0.8rem;
+        padding: 0.6rem 1rem;
+    }
+}
+
+/* Footer (copied from about.css) */
+footer {
+    background: linear-gradient(135deg, #2b54b4 0%, #6d7aec 100%);
+    padding: 2rem;
+    margin-top: 3rem;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+}
+
+.footer-section h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: #fdd835;
+    font-weight: bold;
+}
+
+.footer-section p {
+    line-height: 1.6;
+    color: #e8f5e9;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #e8f5e9;
+}
+
+@media (max-width: 1024px) {
+    .footer-content { gap: 2rem; grid-template-columns: 1fr; }
+}
